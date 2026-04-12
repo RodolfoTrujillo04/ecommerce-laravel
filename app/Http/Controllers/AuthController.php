@@ -20,15 +20,17 @@ class AuthController extends Controller
     public function register(Request $request) {
 
         $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6'
+            'nombre' => 'required',
+            'apellidos' => 'required',
+            'correo' => 'required|email|unique:usuarios,correo',
+            'clave' => 'required|min:6'
         ]);
 
         User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'nombre' => $request->nombre,
+            'apellidos' => $request->apellidos,
+            'correo' => $request->correo,
+            'clave' => Hash::make($request->clave),
             'rol' => 'cliente'
         ]);
 
@@ -37,7 +39,10 @@ class AuthController extends Controller
 
     public function login(Request $request) {
 
-        $credentials = $request->only('email', 'password');
+        $credentials = [
+            'correo' => $request->correo,
+            'password' => $request->clave
+        ];
 
         if (Auth::attempt($credentials)) {
 

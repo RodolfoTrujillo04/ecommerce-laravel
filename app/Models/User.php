@@ -47,4 +47,9 @@ class User extends Authenticatable
     public function ventasVendedor(){
         return $this->hasMany(Venta::class, 'vendedor_id');
     }
+
+    public function getAuthPassword()
+{
+    return $this->clave;
+}
 }
