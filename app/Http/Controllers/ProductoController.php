@@ -5,34 +5,33 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Producto;
 use App\Models\Categoria;
-
+use App\Http\Requests\StoreProductoRequest;
+use App\Http\Requests\UpdateProductoRequest;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ProductoController extends Controller
 {
-    public function index(){
+use AuthorizesRequests; // 👈 ESTO ARREGLA TODO
+public function index(){
         $productos = Producto::with('categorias')->get();
         return view('cliente.productos', compact('productos'));
     }
 
-    public function store(Request $request){
+    
+    public function store(StoreProductoRequest $request)
+{
+    $this->authorize('create', Producto::class);
 
-        // Crear producto
-        $producto = Producto::create([
-            'nombre' => $request->nombre,
-            'descripcion' => $request->descripcion,
-            'precio' => $request->precio,
-            'existencia' => $request->existencia,
-            'usuario_id' => 1 // temporal (luego auth)
-        ]);
+    Producto::create($request->validated());
 
-        // Crear o buscar categoría
-        $categoria = Categoria::firstOrCreate([
-            'nombre' => $request->categoria
-        ]);
+    return redirect()->back();
+}
+public function update(UpdateProductoRequest $request, Producto $producto)
+{
+    $this->authorize('update', $producto);
 
-        // Relación
-        $producto->categorias()->attach($categoria->id);
+    $producto->update($request->validated());
 
-        return redirect()->route('productos.index');
-    }
+    return redirect()->back();
+}
 }
