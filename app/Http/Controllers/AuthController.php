@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -37,6 +38,7 @@ class AuthController extends Controller
         return redirect('/login');
     }
 
+    //  LOGIN CON LOGS
     public function login(Request $request) {
 
         $credentials = [
@@ -48,6 +50,13 @@ class AuthController extends Controller
 
             $user = Auth::user();
 
+            // ✅ LOG EXITOSO
+            Log::channel('autenticacion')->info('Login exitoso', [
+                'usuario_id' => $user->id,
+                'correo' => $user->correo,
+                'ip' => $request->ip()
+            ]);
+
             if ($user->rol == 'cliente') {
                 return redirect('/cliente');
             } elseif ($user->rol == 'empleado') {
@@ -57,11 +66,24 @@ class AuthController extends Controller
             }
         }
 
+        //  LOG FALLIDO
+        Log::channel('autenticacion')->warning('Login fallido', [
+            'correo' => $request->correo,
+            'ip' => $request->ip()
+        ]);
+
         return back()->with('error', 'Datos incorrectos');
     }
 
+    //  LOGOUT CON LOG
     public function logout() {
+
+        Log::channel('autenticacion')->info('Logout', [
+            'usuario_id' => auth()->id()
+        ]);
+
         Auth::logout();
+
         return redirect('/');
     }
 }
