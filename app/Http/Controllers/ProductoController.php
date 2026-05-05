@@ -9,6 +9,8 @@ use App\Models\Categoria;
 use App\Http\Requests\StoreProductoRequest;
 use App\Http\Requests\UpdateProductoRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage; // 👈 agrega esto arriba
 
 class ProductoController extends Controller
 {
@@ -25,12 +27,28 @@ class ProductoController extends Controller
     {
         $this->authorize('create', Producto::class);
 
-        $producto = Producto::create($request->validated());
+        $paths = [];
 
-        // LOG
+        // 📸 Guardar imágenes
+        if ($request->hasFile('fotos')) {
+            foreach ($request->file('fotos') as $foto) {
+                $path = $foto->store('productos', 'public');
+                $paths[] = $path;
+            }
+        }
+
+        // 📦 Datos del producto
+        $data = $request->validated();
+        $data['usuario_id'] = Auth::id();
+        $data['fotos'] = $paths; // 👈 aquí guardas las rutas
+
+        // 💾 Crear producto
+        $producto = Producto::create($data);
+
+        // 📝 LOG
         Log::channel('productos')->info('Producto creado', [
             'id' => $producto->id,
-            'usuario_id' => auth()->id()
+            'usuario_id' => Auth::id()
         ]);
 
         return redirect()->back();
@@ -46,7 +64,7 @@ class ProductoController extends Controller
         // LOG
         Log::channel('productos')->info('Producto actualizado', [
             'id' => $producto->id,
-            'usuario_id' => auth()->id()
+            'usuario_id' => Auth::id()
         ]);
 
         return redirect()->back();
@@ -62,7 +80,7 @@ class ProductoController extends Controller
         // LOG
         Log::channel('productos')->info('Producto eliminado', [
             'id' => $producto->id,
-            'usuario_id' => auth()->id()
+            'usuario_id' => Auth::id()
         ]);
 
         return redirect()->back();

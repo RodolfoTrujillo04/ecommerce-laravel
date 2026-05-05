@@ -18,7 +18,10 @@ class StoreProductoRequest extends FormRequest
             'descripcion' => 'required|string',
             'precio' => 'required|numeric|min:1',
             'existencia' => 'required|integer|min:0',
-           'usuario_id' => 'required|exists:usuarios,id'
+
+            // 🔥 AGREGAR ESTO
+            'fotos' => 'nullable|array',
+            'fotos.*' => 'image|mimes:jpg,jpeg,png|max:2048',
         ];
     }
 }

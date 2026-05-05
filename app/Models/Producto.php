@@ -17,6 +17,10 @@ class Producto extends Model
         'usuario_id'
     ];
 
+    protected $casts = [
+    'fotos' => 'array'
+];
+
     // 🔗 RELACIONES
 
     public function usuario(){

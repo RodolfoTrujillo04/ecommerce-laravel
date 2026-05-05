@@ -26,10 +26,10 @@ class ProductoPolicy
     /**
      * Crear productos
      */
-    public function create(User $user): bool
-    {
-        return in_array($user->rol, ['administrador', 'gerente']);
-    }
+public function create(User $user): bool
+{
+    return in_array($user->rol, ['cliente','empleado','gerente','administrador']);
+}
 
     /**
      * Actualizar producto

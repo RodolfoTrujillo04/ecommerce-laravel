@@ -17,6 +17,7 @@ public function up()
         $table->text('descripcion');
         $table->decimal('precio', 10, 2);
         $table->integer('existencia');
+        $table->json('fotos')->nullable();
         $table->foreignId('usuario_id')->constrained('usuarios')->onDelete('cascade');
         $table->timestamps();
     });

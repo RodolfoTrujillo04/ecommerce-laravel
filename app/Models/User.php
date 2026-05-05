@@ -52,4 +52,22 @@ class User extends Authenticatable
 {
     return $this->clave;
 }
+
+public function ventasComoVendedor()
+{
+    return $this->hasMany(Venta::class, 'vendedor_id');
+}
+
+// 🔥 ESTA ES LA IMPORTANTE (hasManyThrough)
+public function ventasDeProductos()
+{
+    return $this->hasManyThrough(
+        Venta::class,
+        Producto::class,
+        'usuario_id', // FK en productos
+        'producto_id', // FK en ventas
+        'id', // PK usuario
+        'id'  // PK producto
+    );
+}
 }

@@ -13,6 +13,7 @@ public function up()
 {
     Schema::create('ventas', function (Blueprint $table) {
         $table->id();
+        $table->string('ticket')->nullable();
         $table->foreignId('producto_id')->constrained()->onDelete('cascade');
         $table->foreignId('vendedor_id')->constrained('usuarios');
         $table->foreignId('cliente_id')->constrained('usuarios');
